@@ -1,0 +1,14 @@
+import { Controller, Get, Body } from '@nestjs/common';
+import { get } from 'http';
+import { user } from '../user/user.entity';
+import { authservice } from './auth.service';
+import { inputdata } from './auth.dto';
+
+@Controller('/auth')
+export class authcontroller {
+  constructor(private readonly authservice: authservice) {}
+  @Get('/authtoken')
+  async getauthtoken(@Body() dto: inputdata) {
+    return await this.authservice.verifyuser(dto);
+  }
+}
