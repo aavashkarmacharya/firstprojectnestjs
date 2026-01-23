@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common';
 import { userservice } from './user.service';
 import { user } from './user.entity';
-import { dot } from 'node:test/reporters';
-import { stringify } from 'querystring';
-import { get } from 'http';
 import { JwtAuthGuard } from '../auth/passport-local.guard';
+import { roleguard } from 'src/auth/roles.guard';
+import { roles } from 'src/common/enums/roles.enum';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('/user')
 export class usercontroller {
@@ -31,6 +31,10 @@ export class usercontroller {
   async getuser() {
     return this.userservice.getalluser();
   }
+
+  @Roles(roles.admin)
+  @UseGuards(roleguard)
+  @UseGuards(JwtAuthGuard)
   @Patch('/makeadmin/:id')
   async makeadmin(@Param('id') id: number) {
     return this.userservice.makeadmin(id);
