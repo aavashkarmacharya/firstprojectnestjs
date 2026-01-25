@@ -14,10 +14,16 @@ export class user {
   @IsNotEmpty()
   @Column()
   password: string;
-  @IsNotEmpty()
+  @Optional()
   @IsEnum(genders, { message: 'Gender not in enum parameter' })
   @Column({ type: 'enum', enum: genders, default: genders.male })
   gender: genders;
+  @IsNotEmpty()
+  @Column()
+  location: string;
+  @IsNotEmpty()
+  @Column()
+  email: string;
   @Optional()
   @Column({ type: 'enum', enum: roles, default: roles.user })
   roles: roles;

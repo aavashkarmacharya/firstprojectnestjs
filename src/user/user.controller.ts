@@ -14,12 +14,13 @@ import { roleguard } from 'src/auth/roles.guard';
 import { roles } from 'src/common/enums/roles.enum';
 import { Roles } from 'src/auth/roles.decorator';
 
-@Controller('/user')
+@Controller('user')
 export class usercontroller {
-  constructor(private readonly userservice: userservice) {}
-  @Post('/create')
+  constructor(private userservice: userservice) {}
+
+  @Post('register')
   async createuser(@Body() dto: user) {
-    return await this.userservice.getusers(dto);
+    return await this.userservice.register(dto);
   }
   /*  @Get('/getuser/:username')
   async getuserbyusername(@Param('username') username: string) {

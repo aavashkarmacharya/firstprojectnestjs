@@ -7,7 +7,7 @@ import { inputdata } from './auth.dto';
 @Controller('/auth')
 export class authcontroller {
   constructor(private readonly authservice: authservice) {}
-  @Get('/authtoken')
+  @Get('/login')
   async getauthtoken(@Body() dto: inputdata) {
     return await this.authservice.verifyuser(dto);
   }
