@@ -7,6 +7,8 @@ import { usermodule } from './user/user.module';
 import { user } from './user/user.entity';
 import { authmodule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { productmodule } from './product/products.module';
+import { product } from './product/products.entity';
 configDotenv();
 @Module({
   imports: [
@@ -17,9 +19,10 @@ configDotenv();
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [user],
+      entities: [user, product],
       synchronize: true,
     }),
+    productmodule,
     usermodule,
     authmodule,
     PassportModule,
