@@ -7,6 +7,8 @@ import { product } from 'src/product/products.entity';
 import { AddToCartdto } from './addtocartdto';
 import { userservice } from '../user/user.service';
 import { create } from 'node:domain';
+import type { cartdeletion } from './cartdeletion.dto';
+import { user } from 'src/user/user.entity';
 
 @Injectable()
 export class cartservice {
@@ -33,14 +35,15 @@ export class cartservice {
       const product = await this.ProductRepo.findOne({
         where: { productid: dto.productid },
       });
-      if (!product) {
+      /*if (!product) {
         throw new NotFoundException('no product found');
-      }
+    }*/
       const createcart = this.CartRepo.create({
         user: { id: userid } as any,
       });
       return this.CartRepo.save(createcart);
     }
+
     const cartitem = await this.CartItemRepo.findOne({
       where: {
         cart: { cartid: cart.cartid },
@@ -83,5 +86,33 @@ export class cartservice {
       },
     }));
     return { cartid: cart.cartid, usercart };
+  }
+  async deletefromcart(userid: number, dto: cartdeletion) {
+    const cart = await this.CartRepo.findOne({
+      where: {
+        user: { id: userid },
+      },
+      relations: ['items', 'items.product'],
+    });
+    if (!cart) {
+      throw new NotFoundException('cart is empty!');
+    }
+    const cartitem = await this.CartItemRepo.findOne({
+      where: {
+        cart: { cartid: cart.cartid },
+        product: { productid: dto.productid },
+      },
+    });
+    if (!cartitem) {
+      throw new NotFoundException('product not in cart');
+    }
+    if (cartitem.quantity > 1) {
+      while (dto.quantity < cartitem.quantity) {
+        cartitem.quantity -= dto.quantity;
+        return await this.CartItemRepo.save(cartitem);
+      }
+    }
+
+    return this.CartItemRepo.remove(cartitem);
   }
 }
