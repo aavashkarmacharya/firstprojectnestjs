@@ -61,16 +61,27 @@ export class cartservice {
       return this.CartItemRepo.save(newcartitem);
     }
   }
-  async getcart(userid: number){
-const cart = this.CartRepo.findOne({
-  where: {
-    user: {id: userid},
-  }, 
-  relations: ['items', 'items.product'],
-});
-if(!cart){
-  throw new NotFoundException('cart is empty');
-}
-const visibleproduct = 
+  async getcart(userid: number) {
+    const cart = await this.CartRepo.findOne({
+      where: {
+        user: { id: userid },
+      },
+      relations: ['items', 'items.product'],
+    });
+    if (!cart) {
+      throw new NotFoundException('cart is empty');
+    }
+    const usercart = cart.items.map((usercart) => ({
+      itemid: usercart.id,
+      quantity: usercart.quantity,
+      products: {
+        productid: usercart.product.productid,
+        productname: usercart.product.productname,
+        discription: usercart.product.discription,
+        price: usercart.product.price,
+        total_price: usercart.product.price * usercart.quantity,
+      },
+    }));
+    return { cartid: cart.cartid, usercart };
   }
 }
