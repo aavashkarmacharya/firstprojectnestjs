@@ -14,4 +14,6 @@ export class product {
   discription: string;
   @Column('decimal', { scale: 2 })
   price: number;
+  @Column()
+  stock: number;
 }
