@@ -29,4 +29,7 @@ export class productservice {
     }
     return product;
   }
+  async listallproduct() {
+    return await this.ProductRepo.find();
+  }
 }

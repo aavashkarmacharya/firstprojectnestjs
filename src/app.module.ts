@@ -9,6 +9,9 @@ import { authmodule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { productmodule } from './product/products.module';
 import { product } from './product/products.entity';
+import { cartmodule } from './cart/cart.module';
+import { cartentity } from './cart/cart.entity';
+import { cartitem } from './cart/cart-item.entity';
 configDotenv();
 @Module({
   imports: [
@@ -19,13 +22,14 @@ configDotenv();
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [user, product],
+      entities: [user, product, cartentity, cartitem],
       synchronize: true,
     }),
     productmodule,
     usermodule,
     authmodule,
     PassportModule,
+    cartmodule,
   ],
   controllers: [AppController],
   providers: [AppService],

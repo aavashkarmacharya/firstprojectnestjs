@@ -19,7 +19,6 @@ export class cartentity {
   @OneToOne(() => user)
   @JoinColumn()
   user: user;
-  buyerid: number; //relation is to be implemented here
   @OneToMany(() => cartitem, (item) => item.cart)
   items: cartitem[];
 }

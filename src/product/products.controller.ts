@@ -17,6 +17,11 @@ export class productcontroller {
   async createproduct(@Body() dto: product) {
     return await this.productservice.createproduct(dto);
   }
+  @Get('getallproducts')
+  async getproducts() {
+    return await this.productservice.listallproduct();
+  }
+
   @Get('getproduct/:product')
   async getproductbyname(@Param('product') product: string) {
     return await this.productservice.getproductbyname(product);
