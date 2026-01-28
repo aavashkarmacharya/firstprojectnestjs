@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../auth/passport-local.guard';
 import { roleguard } from 'src/auth/roles.guard';
 import { roles } from 'src/common/enums/roles.enum';
 import { Roles } from 'src/auth/roles.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('user')
 export class usercontroller {
@@ -27,6 +28,7 @@ export class usercontroller {
     return await this.userservice.getuserbyusername(username);
   }
     */
+  @ApiBearerAuth('jwt')
   @UseGuards(JwtAuthGuard)
   @Get('/getalluser')
   async getuser() {

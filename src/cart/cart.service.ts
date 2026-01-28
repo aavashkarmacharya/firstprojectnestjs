@@ -4,10 +4,10 @@ import { DeepPartial, Repository } from 'typeorm';
 import { cartentity } from './cart.entity';
 import { cartitem } from './cart-item.entity';
 import { product } from 'src/product/products.entity';
-import { AddToCartdto } from './addtocartdto';
+import { AddToCartDto } from './addtocartdto';
 import { userservice } from '../user/user.service';
 import { create } from 'node:domain';
-import type { cartdeletion } from './cartdeletion.dto';
+import type { CartDeletionDto } from './cartdeletion.dto';
 import { user } from 'src/user/user.entity';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class cartservice {
     private ProductRepo: Repository<product>,
     private readonly userservice: userservice,
   ) {}
-  async addToCart(userid: number, dto: AddToCartdto) {
+  async addToCart(userid: number, dto: AddToCartDto) {
     const cart = await this.CartRepo.findOne({
       where: { user: { id: userid } },
       relations: ['items', 'items.product'],
@@ -40,6 +40,7 @@ export class cartservice {
     }*/
       const createcart = this.CartRepo.create({
         user: { id: userid } as any,
+        items: [],
       });
       return this.CartRepo.save(createcart);
     }
@@ -87,7 +88,7 @@ export class cartservice {
     }));
     return { cartid: cart.cartid, usercart };
   }
-  async deletefromcart(userid: number, dto: cartdeletion) {
+  async deletefromcart(userid: number, dto: CartDeletionDto) {
     const cart = await this.CartRepo.findOne({
       where: {
         user: { id: userid },
