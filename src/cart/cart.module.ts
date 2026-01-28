@@ -7,6 +7,7 @@ import { cartentity } from './cart.entity';
 import { cartitem } from './cart-item.entity';
 import { productmodule } from 'src/product/products.module';
 import { product } from 'src/product/products.entity';
+import { AddToCartDto } from './addtocartdto';
 
 @Module({
   imports: [

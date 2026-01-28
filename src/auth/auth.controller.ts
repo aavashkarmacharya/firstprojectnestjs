@@ -1,4 +1,4 @@
-import { Controller, Get, Body } from '@nestjs/common';
+import { Controller, Get, Body, Post } from '@nestjs/common';
 import { get } from 'http';
 import { user } from '../user/user.entity';
 import { authservice } from './auth.service';
@@ -7,7 +7,7 @@ import { inputdata } from './auth.dto';
 @Controller('/auth')
 export class authcontroller {
   constructor(private readonly authservice: authservice) {}
-  @Get('/login')
+  @Post('/login')
   async getauthtoken(@Body() dto: inputdata) {
     return await this.authservice.verifyuser(dto);
   }

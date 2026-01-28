@@ -9,10 +9,13 @@ import {
 } from '@nestjs/common';
 import { product } from './products.entity';
 import { productservice } from './products.service';
+import { ApiBody, ApiOperation } from '@nestjs/swagger';
 
 @Controller('/product')
 export class productcontroller {
   constructor(private productservice: productservice) {}
+  @ApiOperation({ summary: 'create a product' })
+  @ApiBody({ description: 'create a product', type: product })
   @Post('/createproduct')
   async createproduct(@Body() dto: product) {
     return await this.productservice.createproduct(dto);
