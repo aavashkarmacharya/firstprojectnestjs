@@ -14,6 +14,7 @@ import { roleguard } from 'src/auth/roles.guard';
 import { roles } from 'src/common/enums/roles.enum';
 import { Roles } from 'src/auth/roles.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Admin } from 'typeorm';
 
 @Controller('user')
 export class usercontroller {
@@ -28,18 +29,24 @@ export class usercontroller {
     return await this.userservice.getuserbyusername(username);
   }
     */
-  @ApiBearerAuth('jwt')
+  /*@ApiBearerAuth('jwt')
+  @UseGuards(JwtAuthGuard)
+  */
+
+  //@Roles(roles.user)
+  //@UseGuards(roleguard)
   @UseGuards(JwtAuthGuard)
   @Get('/getalluser')
   async getuser() {
     return this.userservice.getalluser();
   }
 
-  @Roles(roles.admin)
+  /* @Roles(roles.admin)
   @UseGuards(roleguard)
   @UseGuards(JwtAuthGuard)
   @Patch('/makeadmin/:id')
   async makeadmin(@Param('id') id: number) {
     return this.userservice.makeadmin(id);
   }
+    */
 }
