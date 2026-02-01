@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { userservice } from 'src/user/user.service';
 import { inputdata, ReturndataDto, SignindataDto } from './auth.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -14,7 +14,7 @@ export class authservice {
     if (checkuser && checkuser.password === dto.password) {
       return await this.generatetoken(checkuser);
     }
-    return null;
+    throw new UnauthorizedException('incorrect data sent!');
   }
   async generatetoken(dto: ReturndataDto): Promise<SignindataDto | null> {
     const tokenpayload = {

@@ -40,7 +40,6 @@ export class cartservice {
     }*/
       const createcart = this.CartRepo.create({
         user: { id: userid } as any,
-        items: [],
       });
       return this.CartRepo.save(createcart);
     }
@@ -76,7 +75,6 @@ export class cartservice {
       throw new NotFoundException('cart is empty');
     }
     const usercart = cart.items.map((usercart) => ({
-      itemid: usercart.id,
       quantity: usercart.quantity,
       products: {
         productid: usercart.product.productid,

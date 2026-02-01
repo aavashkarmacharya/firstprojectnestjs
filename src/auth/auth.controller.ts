@@ -9,6 +9,6 @@ export class authcontroller {
   constructor(private readonly authservice: authservice) {}
   @Post('/login')
   async getauthtoken(@Body() dto: inputdata) {
-    return await this.authservice.verifyuser(dto);
+    return this.authservice.verifyuser(dto);
   }
 }
