@@ -13,10 +13,8 @@ export class roleguard implements CanActivate {
     if (!reqrole) {
       return true;
     }
-    {
-      const user = context.switchToHttp().getRequest().user;
-      const checkrequirement = reqrole.some((roles) => user.Roles === roles);
-      return checkrequirement;
-    }
+    const user = context.switchToHttp().getRequest().user;
+    const checkrequirement = reqrole.some((roles) => user.Roles === roles);
+    return checkrequirement;
   }
 }
