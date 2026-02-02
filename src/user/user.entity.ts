@@ -8,7 +8,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class user {
-  @ApiProperty({ description: 'Unique ID of the user', example: 1 })
   @PrimaryGeneratedColumn()
   id: number;
 

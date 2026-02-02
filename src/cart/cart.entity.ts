@@ -33,6 +33,7 @@ export class cartentity {
     type: () => [cartitem],
     example: [{ id: 1, productid: 2, quantity: 3 }],
   })
-  @OneToMany(() => cartitem, (item) => item.cart)
+  @OneToMany(() => cartitem, (items) => items.cart)
+  @JoinColumn()
   items: cartitem[];
 }
