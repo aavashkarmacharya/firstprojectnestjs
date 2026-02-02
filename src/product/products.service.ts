@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { product } from './products.entity';
 import { Repository } from 'typeorm';
 import { error } from 'node:console';
+import { cartitem } from '../cart/cart-item.entity';
 
 @Injectable()
 export class productservice {
   constructor(
     @InjectRepository(product)
     private readonly ProductRepo: Repository<product>,
+    @InjectRepository(cartitem)
+    private readonly cartRepo: Repository<cartitem>,
   ) {}
   async createproduct(dto: product): Promise<product> {
     return await this.ProductRepo.save(dto);
@@ -18,6 +21,7 @@ export class productservice {
     return await updatedproduct;
   }
   async deleteproduct(id: number) {
+    await this.cartRepo.delete({ product: { productid: id } });
     return await this.ProductRepo.delete({ productid: id });
   }
   async getproductbyname(name: string): Promise<product[]> {

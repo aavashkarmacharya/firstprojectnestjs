@@ -9,6 +9,7 @@ import { userservice } from '../user/user.service';
 import { create } from 'node:domain';
 import type { CartDeletionDto } from './cartdeletion.dto';
 import { user } from 'src/user/user.entity';
+import { MESSAGES } from '@nestjs/core/constants';
 
 @Injectable()
 export class cartservice {
@@ -22,7 +23,7 @@ export class cartservice {
     private readonly userservice: userservice,
   ) {}
   async addToCart(userid: number, dto: AddToCartDto) {
-    const cart = await this.CartRepo.findOne({
+    let cart = await this.CartRepo.findOne({
       where: { user: { id: userid } },
       relations: ['items', 'items.product'],
     });
@@ -31,37 +32,47 @@ export class cartservice {
     if (!user) {
       throw new NotFoundException('no user found');
     }
-    if (!cart) {
-      const product = await this.ProductRepo.findOne({
-        where: { productid: dto.productid },
-      });
-      /*if (!product) {
-        throw new NotFoundException('no product found');
-    }*/
-      const createcart = this.CartRepo.create({
-        user: { id: userid } as any,
-      });
-      return this.CartRepo.save(createcart);
-    }
 
-    const cartitem = await this.CartItemRepo.findOne({
-      where: {
-        cart: { cartid: cart.cartid },
-        product: { productid: dto.productid },
-      },
-    });
-    if (cartitem) {
-      //product already exists in the cart
-      cartitem.quantity += dto.productquantity;
-      return await this.CartItemRepo.save(cartitem);
-    } else {
-      //product doesnt exit in cart
-      const newcartitem = this.CartItemRepo.create({
-        cart: { cartid: cart.cartid },
-        product: { productid: dto.productid },
-        quantity: dto.productquantity,
+    if (!cart) {
+      const usercart = await this.CartRepo.save(
+        this.CartRepo.create({
+          user: { id: userid } as any,
+        }),
+      );
+      cart = usercart;
+    }
+    if (cart) {
+      const cartitem = await this.CartItemRepo.findOne({
+        where: {
+          cart: { cartid: cart.cartid },
+          product: { productid: dto.productid },
+        },
       });
-      return this.CartItemRepo.save(newcartitem);
+      if (cartitem) {
+        //product already exists in the cart
+
+        cartitem.quantity += dto.productquantity;
+        await this.CartItemRepo.save(cartitem);
+        return {
+          userid: userid,
+
+          productid: dto.productid,
+          productquantity: cartitem.quantity,
+        };
+      } else {
+        //product doesnt exit in cart
+        const newcartitem = this.CartItemRepo.create({
+          cart: { cartid: cart.cartid },
+          product: { productid: dto.productid },
+          quantity: dto.productquantity,
+        });
+        await this.CartItemRepo.save(newcartitem);
+        return {
+          userid: userid,
+          productid: dto.productid,
+          productquantity: dto.productquantity,
+        };
+      }
     }
   }
   async getcart(userid: number) {
@@ -74,17 +85,18 @@ export class cartservice {
     if (!cart) {
       throw new NotFoundException('cart is empty');
     }
-    const usercart = cart.items.map((usercart) => ({
-      quantity: usercart.quantity,
-      products: {
-        productid: usercart.product.productid,
-        productname: usercart.product.productname,
-        discription: usercart.product.discription,
-        price: usercart.product.price,
-        total_price: usercart.product.price * usercart.quantity,
+    const usercart = cart.items.map((cartdata) => ({
+      userid: userid,
+      quantity: cartdata.quantity,
+      product: {
+        productid: cartdata.product.productid,
+        productname: cartdata.product.productname,
+        discription: cartdata.product.discription,
+        price: cartdata.product.price,
+        total_price: cartdata.product.price * cartdata.quantity,
       },
     }));
-    return { cartid: cart.cartid, usercart };
+    return { usercart };
   }
   async deletefromcart(userid: number, dto: CartDeletionDto) {
     const cart = await this.CartRepo.findOne({
@@ -106,12 +118,13 @@ export class cartservice {
       throw new NotFoundException('product not in cart');
     }
     if (cartitem.quantity > 1) {
-      while (dto.quantity < cartitem.quantity) {
+      if (dto.quantity < cartitem.quantity) {
         cartitem.quantity -= dto.quantity;
         return await this.CartItemRepo.save(cartitem);
       }
     }
+    await this.CartItemRepo.remove(cartitem);
 
-    return this.CartItemRepo.remove(cartitem);
+    return { message: 'item has been removed from the cart' };
   }
 }

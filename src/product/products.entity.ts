@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class product {
-  @ApiProperty({ description: 'Unique ID of the product', example: 1 })
+  //@ApiProperty({ description: 'Unique ID of the product', example: 1 })
   @PrimaryGeneratedColumn()
   productid: number;
 

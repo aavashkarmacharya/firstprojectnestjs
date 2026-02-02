@@ -32,10 +32,7 @@ export class usercontroller {
   /*@ApiBearerAuth('jwt')
   @UseGuards(JwtAuthGuard)
   */
-
-  //@Roles(roles.user)
-  //@UseGuards(roleguard)
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Get('/getalluser')
   async getuser() {
     return this.userservice.getalluser();
