@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, EntityNotFoundError, Repository } from 'typeorm';
 import { cartentity } from './cart.entity';
 import { cartitem } from './cart-item.entity';
 import { product } from 'src/product/products.entity';
@@ -48,19 +48,35 @@ export class cartservice {
           product: { productid: dto.productid },
         },
       });
+      const selectedproduct = await this.ProductRepo.findOne({
+        where: {
+          productid: dto.productid,
+        },
+      });
+      if (!selectedproduct) {
+        throw new NotFoundException(
+          'the product you are searching for doesnt exist',
+        );
+      }
       if (cartitem) {
         //product already exists in the cart
-
         cartitem.quantity += dto.productquantity;
+        if (cartitem.quantity > selectedproduct.stock) {
+          //newly added feature
+          return { message: 'Added amount exceeds stock!!' };
+        }
         await this.CartItemRepo.save(cartitem);
         return {
-          userid: userid,
-
-          productid: dto.productid,
-          productquantity: cartitem.quantity,
+          message: 'Product added to cart',
+          user_id: userid,
+          product_id: dto.productid,
+          product_quantity: cartitem.quantity,
         };
       } else {
         //product doesnt exit in cart
+        if (dto.productquantity > selectedproduct.stock) {
+          throw new NotFoundException('asked quantity exceeds stock!');
+        }
         const newcartitem = this.CartItemRepo.create({
           cart: { cartid: cart.cartid },
           product: { productid: dto.productid },
@@ -68,6 +84,7 @@ export class cartservice {
         });
         await this.CartItemRepo.save(newcartitem);
         return {
+          message: 'Product added to cart',
           userid: userid,
           productid: dto.productid,
           productquantity: dto.productquantity,
